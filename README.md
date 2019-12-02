@@ -12,7 +12,7 @@ pip3 install -r requirements.txt
 
 ## Configuration
 
-PRAW requires configurations. Create a praw.ini file in the root directory as follows:
+PRAW requires configurations. Create a `praw.ini` file in the root directory as follows:
 
 ```bash
 [arg-mining]
@@ -20,7 +20,7 @@ client_id=CLIENT_ID
 client_secret=CLIENT_SECRET
 user_agent=USER_AGENT
 
-<OPTIONAL>
+; <OPTIONAL>
 username=USERNAME
 password=PASSWORD
 ```
