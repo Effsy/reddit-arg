@@ -1,8 +1,8 @@
 import json
 import re
-
 import praw
 import nltk
+import random
 
 # download dataset for sentence tokenizer
 nltk.download('punkt')
@@ -12,7 +12,7 @@ reddit = praw.Reddit('arg-mining')
 
 args = []
 
-# Add setences from submission title, body and comments to args array
+# Add sentences from submission title, body and comments to args array
 for submission in reddit.subreddit('changemyview').new(limit=10):
     # Add submission body and title to args
     args = args + nltk.sent_tokenize(submission.title) + nltk.sent_tokenize(submission.selftext)
@@ -20,31 +20,33 @@ for submission in reddit.subreddit('changemyview').new(limit=10):
     # Remove "replace more" from comments results
     submission.comments.replace_more(limit=0)
 
-    # Get full comment tree under top level comments
+    # Get full comment tree under top level comments and add to args
     for comment in submission.comments.list():
         args = args + nltk.sent_tokenize(comment.body)
-
-# Split all sentences containing \n into separate sentences
-temp_array = []
-for i, val in enumerate(args):
-    split_args = val.splitlines()
-    temp_array = temp_array + split_args
-args = temp_array
-
-
 
 # Convert common utf-8 punctuation to ascii
 # Clean but still retain the exact same meaning of the text
 def clean_text(text):
     # Replace utf-8 single quotes with ascii apostrophes
     text = re.sub(r"(\u2018|\u2019)", "'", text)
-    # Replace utf-8 double quotes with ascii quotes
+    # Replace utf-8 double quotes with ascii double quotes
     text = re.sub(r"(\u201c|\u201d)", '"', text)
     return text
 
-args = map(lambda x: clean_text(x), args)
+args = [clean_text(arg) for arg in args]
 
-# Write data to file
+# Split all sentences containing \n into separate sentences
+args = [split_args for arg in args for split_args in arg.splitlines()]
+
+# Remove empty strings from list
+args = [x for x in args if x]
+
+print(args)
+
+# Take a random sample of 1000
+args = random.sample(args, 1000)
+
+# Write data to file as a json array
 args_json = []
 
 for arg in args:
