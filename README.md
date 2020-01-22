@@ -24,11 +24,19 @@ user_agent=USER_AGENT
 username=USERNAME
 password=PASSWORD
 ```
+## Run scripts
+
+`python3 1_gather_data`
+`python3 2_clean_data`
+; `python3 3_gather_data`
+; `python3 1_gather_data`
+; `python3 1_gather_data`
+
 
 1 gather data
 subtask - label gathered data
 2 clean data
-3 extract features 
+3 extract features
 4 classify labelled data
 
 
