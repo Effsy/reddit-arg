@@ -11,11 +11,15 @@ nltk.download('punkt')
 reddit = praw.Reddit('arg-mining')
 
 args = []
+arg_titles = []
 
 # Add sentences from submission title, body and comments to args array
 for submission in reddit.subreddit('changemyview').new(limit=10):
     # Add submission body and title to args
-    args = args + nltk.sent_tokenize(submission.title) + nltk.sent_tokenize(submission.selftext)
+    args = args + nltk.sent_tokenize(submission.selftext)
+    
+    arg_titles.append(submission.title + " ID: " + submission.id)
+    # print(submission.title)
 
     # Remove "replace more" from comments results
     submission.comments.replace_more(limit=0)
@@ -38,19 +42,22 @@ args = [clean_text(arg) for arg in args]
 # Split all sentences containing \n into separate sentences
 args = [split_args for arg in args for split_args in arg.splitlines()]
 
-# Remove empty strings from list
-args = [x for x in args if x]
+# Remove empty strings or whitespace from list
+args = [x for x in args if x.strip()]
 
 print(args)
 
 # Take a random sample of 1000
 args = random.sample(args, 1000)
 
-# Write data to file as a json array
-args_json = []
+# Write data to file
 
-for arg in args:
-    args_json.append({"text": arg})
+with open('./raw_data/1000_raw_argument_sentences_3.txt', 'w') as write_file:
+    for arg in args:
+        write_file.write(arg + '\n')
 
-with open('./raw_data/1000_raw_argument_sentences.json', 'w') as fp:
-    json.dump(args_json, fp)
+# Write titles to file
+
+with open('./raw_data/argument_titles_3.txt', 'w') as write_file:
+    for title in arg_titles:
+        write_file.write(title + '\n')
