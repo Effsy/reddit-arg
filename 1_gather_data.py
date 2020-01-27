@@ -20,7 +20,7 @@ arg_threads = {}
 arg_titles = {}
 
 # Add sentences from submission title, body and comments to arg_threads array
-for submission in reddit.subreddit('changemyview').new(limit=50):
+for submission in reddit.subreddit('changemyview').hot(limit=50):
     # Add submission body and title to arg_threads[i]
     arg_threads[submission.id] = []
     arg_threads[submission.id] = arg_threads[submission.id] + nltk.sent_tokenize(submission.selftext)
@@ -44,53 +44,61 @@ def clean_text(text):
     text = re.sub(r"(\u2018|\u2019)", "'", text)
     # Replace utf-8 double quotes with ascii double quotes
     text = re.sub(r"(\u201c|\u201d)", '"', text)
+    # Remove all asterisks (bold or italics)
+    text = re.sub(r"\*", "", text)
+
+    # Remove arguments starting with > or - (reddit markup for quotes or bullet points)
+    # With spaces before or after
+    text = re.sub(r"\s*>\s*", "", text)
+    text = re.sub(r"\s*-\s*", "", text)
+    
     return text
 
 for key, thread in arg_threads.items():
     arg_threads[key] = [clean_text(arg) for arg in thread]
 
-# arg_threads = [clean_text(arg) for thread in arg_threads.values() for arg in thread]
-print(arg_threads.values())
+
 
 # Split all sentences containing \n into separate sentences
 for key, thread in arg_threads.items():
     arg_threads[key] = [split_args for arg in thread for split_args in arg.splitlines()]
 
-# Remove empty strings or whitespace from list
+# Remove whitespace from arguments and empty strings from thread lists
 for key, thread in arg_threads.items():
-    arg_threads[key] = [arg for arg in thread if arg.strip()]
+    arg_threads[key] = [arg.strip() for arg in thread if arg.strip()]
 
-# Check if string starts with: any number of whitespace, followed by >, followed by any number of whitespace
 print(arg_threads.values())
+
+# Remove duplicates from the lists
+for key, thread in arg_threads.items():
+    arg_threads[key] = list(set(thread))
 
 
 #################### STORING ####################
 
-# Take the first 10 threads that contain at least 100 arguments
+# Take the first 20 threads that contain at least 100 arguments
 
 for key, thread in list(arg_threads.items()):
-    if len(thread) < 100:
+    if len(thread) < 50:
         del arg_threads[key]
         del arg_titles[key]
 
-args = [thread for thread in arg_threads.values()][:10]
-arg_titles = [title for title in arg_titles.values()][:10]
+args = [thread for thread in arg_threads.values()][:20]
+arg_titles = [title for title in arg_titles.values()][:20]
 
-# args = [thread for thread in arg_threads.values() if len(thread) >= 100][:10]
-
-# Take a random sample of 100 arguments from each argument thread
-args = [arg for thread in args for arg in random.sample(thread, 100)]
+# Take a random sample of 50 arguments from each argument thread
+args = [arg for thread in args for arg in random.sample(thread, 50)]
 
 print(args)
 
 # Write data to file
 
-with open('./raw_data/1000_raw_argument_sentences_6.txt', 'w') as write_file:
+with open('./raw_data/1000_raw_argument_sentences_8.txt', 'w') as write_file:
     for arg in args:
         write_file.write(arg + '\n')
 
 # Write titles to file
 
-with open('./raw_data/argument_titles_6.txt', 'w') as write_file:
+with open('./raw_data/argument_titles_8.txt', 'w') as write_file:
     for title in arg_titles:
         write_file.write(title + '\n')
