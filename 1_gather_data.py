@@ -93,12 +93,12 @@ print(args)
 
 # Write data to file
 
-with open('./raw_data/1000_raw_argument_sentences_8.txt', 'w') as write_file:
+with open('./raw_data/1000_raw_argument_sentences_1.txt', 'w') as write_file:
     for arg in args:
         write_file.write(arg + '\n')
 
 # Write titles to file
 
-with open('./raw_data/argument_titles_8.txt', 'w') as write_file:
+with open('./raw_data/argument_titles_1.txt', 'w') as write_file:
     for title in arg_titles:
         write_file.write(title + '\n')
