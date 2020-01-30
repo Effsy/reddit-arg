@@ -7,7 +7,7 @@ import random
 # download dataset for sentence tokenizer
 nltk.download('punkt')
 
-#################### FETCHING ####################
+#################### FETCH ####################
 
 # Create new praw instance with credentials from praw.ini
 reddit = praw.Reddit('arg-mining')
@@ -35,7 +35,7 @@ for submission in reddit.subreddit('changemyview').hot(limit=50):
         arg_threads[submission.id] = arg_threads[submission.id] + nltk.sent_tokenize(comment.body)
 
 
-#################### CLEANING ####################
+#################### CLEAN ####################
 
 # Convert common utf-8 punctuation to ascii
 # Clean but still retain the exact same meaning of the text
@@ -74,7 +74,7 @@ for key, thread in arg_threads.items():
     arg_threads[key] = list(set(thread))
 
 
-#################### STORING ####################
+#################### STORE ####################
 
 # Take the first 20 threads that contain at least 100 arguments
 
