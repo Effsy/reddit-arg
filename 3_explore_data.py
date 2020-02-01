@@ -49,3 +49,7 @@ plt.axis("off")
 plt.imshow(wordcloud_notarg, interpolation='bilinear')
 plt.axis("off")
 # plt.show()
+
+# Full vocabulary of dataset
+
+print(pd.DataFrame(dtm_arg.sum()))
