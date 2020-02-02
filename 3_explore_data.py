@@ -4,7 +4,9 @@ from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 import wordcloud
 
 import matplotlib.pyplot as plt
-
+# plt.show()
+pd.set_option('max_colwidth', 190)
+pd.set_option('display.max_rows', 5000)
 # Read document-term matrix
 df_dtm = pd.read_pickle("dtm.pkl")
 df_tdm = df_dtm.transpose()
@@ -48,8 +50,6 @@ plt.axis("off")
 
 plt.imshow(wordcloud_notarg, interpolation='bilinear')
 plt.axis("off")
-# plt.show()
 
 # Full vocabulary of dataset
-
 print(pd.DataFrame(dtm_arg.sum()))

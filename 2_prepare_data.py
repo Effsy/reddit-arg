@@ -17,6 +17,8 @@ with open('./labelled_data/1000_labelled_argument_sentences_8.json') as f:
 
 df = pd.DataFrame().from_dict(data, orient='columns')
 
+# Remove stop words separately
+
 #################### STORE ####################
 
 # Save unaltered corpus

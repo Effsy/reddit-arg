@@ -1,3 +1,7 @@
+# Retrieve data from r/changemyview using Reddit's API through the PRAW library
+# Randomly select a sample of arguments from threads 
+# Saves the data to a file for labelling
+
 import json
 import re
 import praw
