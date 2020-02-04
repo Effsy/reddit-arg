@@ -24,7 +24,7 @@ arg_threads = {}
 arg_titles = {}
 
 # Add sentences from submission title, body and comments to arg_threads array
-for submission in reddit.subreddit('changemyview').hot(limit=50):
+for submission in reddit.subreddit('changemyview').hot(limit=500):
     # Add submission body and title to arg_threads[i]
     arg_threads[submission.id] = []
     arg_threads[submission.id] = arg_threads[submission.id] + nltk.sent_tokenize(submission.selftext)
@@ -49,12 +49,12 @@ def clean_text(text):
     # Replace utf-8 double quotes with ascii double quotes
     text = re.sub(r"(\u201c|\u201d)", '"', text)
     # Remove all asterisks (bold or italics)
-    text = re.sub(r"\*", "", text)
+    # text = re.sub(r"\*", "", text)
 
     # Remove arguments starting with > or - (reddit markup for quotes or bullet points)
     # With spaces before or after
-    text = re.sub(r"\s*>\s*", "", text)
-    text = re.sub(r"\s*-\s*", "", text)
+    # text = re.sub(r"\s*>\s*", "", text)
+    # text = re.sub(r"\s*-\s*", "", text)
     
     return text
 
@@ -80,29 +80,29 @@ for key, thread in arg_threads.items():
 
 #################### STORE ####################
 
-# Take the first 20 threads that contain at least 100 arguments
+# Take the first 500 threads that contain at least 100 arguments
 
 for key, thread in list(arg_threads.items()):
     if len(thread) < 50:
         del arg_threads[key]
         del arg_titles[key]
 
-args = [thread for thread in arg_threads.values()][:20]
-arg_titles = [title for title in arg_titles.values()][:20]
+args = [thread for thread in arg_threads.values()][:200]
+arg_titles = [title for title in arg_titles.values()][:200]
 
-# Take a random sample of 50 arguments from each argument thread
-args = [arg for thread in args for arg in random.sample(thread, 50)]
+# Take a random sample of 2 arguments from each argument thread
+args = [arg for thread in args for arg in random.sample(thread, 5)]
 
 print(args)
 
 # Write data to file
 
-with open('./raw_data/1000_raw_argument_sentences_1.txt', 'w') as write_file:
+with open('./raw_data/1000_raw_argument_sentences_3.txt', 'w') as write_file:
     for arg in args:
         write_file.write(arg + '\n')
 
 # Write titles to file
 
-with open('./raw_data/argument_titles_1.txt', 'w') as write_file:
+with open('./raw_data/argument_titles_3.txt', 'w') as write_file:
     for title in arg_titles:
         write_file.write(title + '\n')
