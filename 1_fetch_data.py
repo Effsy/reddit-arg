@@ -90,19 +90,19 @@ for key, thread in list(arg_threads.items()):
 args = [thread for thread in arg_threads.values()][:200]
 arg_titles = [title for title in arg_titles.values()][:200]
 
-# Take a random sample of 2 arguments from each argument thread
+# Take a random sample of 5 arguments from each argument thread
 args = [arg for thread in args for arg in random.sample(thread, 5)]
 
 print(args)
 
 # Write data to file
 
-with open('./raw_data/1000_raw_argument_sentences_3.txt', 'w') as write_file:
+with open('./unlabelled_data/1000_unlabelled_argument_sentences.txt', 'w') as write_file:
     for arg in args:
         write_file.write(arg + '\n')
 
 # Write titles to file
 
-with open('./raw_data/argument_titles_3.txt', 'w') as write_file:
+with open('./unlabelled_data/argument_titles.txt', 'w') as write_file:
     for title in arg_titles:
         write_file.write(title + '\n')

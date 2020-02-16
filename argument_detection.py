@@ -42,6 +42,7 @@ class ArgumentPredictor():
         # Lemmatize
         sentence_lemma = [self.lemmatize_sentence(sentence)]
         
+        # Predict using the ngram model
         ngram_prediction = 1 if self.ngram_model.predict(sentence_lemma)[0] == "arg" else 0
         
         # Sentiment of sentence
@@ -71,15 +72,17 @@ class ArgumentPredictor():
     def predict_argument(self, sentence):
         # Remove punctuation
         sentence_cleaned = sentence.translate(str.maketrans('', '', string.punctuation))
-        # print(sentence_cleaned)
         features = self.extract_features(sentence_cleaned)
-        # print(features)
-        return self.meta_model.predict(features)
+
+        return self.meta_model.predict(features)[0]
+
+    def is_arg(self, sentence):
+        return self.predict_argument(sentence) == "arg"
 
 
-    def filter_arguments(self, sentence_list):
-        """Filters all non-argumentative sentences from the list and returns only those that are argumentative.
-        Uses predictive models, which may lead to some incorrect classifications"""
+    # def filter_arguments(self, sentence_list):
+    #     """Filters all non-argumentative sentences from the list and returns only those that are argumentative.
+    #     Uses predictive models, which may lead to some incorrect classifications"""
 
         
 
