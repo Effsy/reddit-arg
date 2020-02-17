@@ -38,5 +38,3 @@ subtask - label gathered data
 2 clean data
 3 extract features
 4 classify labelled data
-
-The arguments labelled are from dataset 4
