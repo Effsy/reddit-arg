@@ -18,6 +18,12 @@ def clean_text(text):
     text = re.sub(r"(\u2018|\u2019)", "'", text)
     # Replace utf-8 double quotes with ascii double quotes
     text = re.sub(r"(\u201c|\u201d)", '"', text)
+    # Remove > or - at beginning of sentences(reddit markup for quotes or bullet points)
+    # with spaces before or after
+    text = re.sub(r"\s*>\s*", "", text)
+    text = re.sub(r"\s*-\s*", "", text)
+    # Remove double backslash
+    text = re.sub(r"\\+", "", text)
     
     return text
 
@@ -66,6 +72,11 @@ for comment in submission.comments.list():
 # Predict relations for all pairs
 arg_graph = [pair for pair, not_attacking in zip(pairs, rp.predict_relations(pairs)) if not not_attacking]
 
+# Swap pairs (in directed graphs, typically the first node points to the second)
+arg_graph = [(pair[1], pair[0]) for pair in arg_graph]
+
+# Remove duplicates
+arg_graph = list(set(arg_graph))
 
 arg_graph_dict = {
     "id": submission_id,
@@ -73,7 +84,7 @@ arg_graph_dict = {
     "graph": arg_graph
 }
 
-filename = "./graphs/%s.json" % submission_id
+filename = "./graphs/data/%s.json" % submission_id
 with open(filename, "w") as f:
     json.dump(arg_graph_dict, f)
 
