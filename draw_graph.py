@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 import textwrap
@@ -19,22 +20,23 @@ for node in graph:
     node[1] = textwrap.fill(node[1], 30)
 
 # draw graph
-
 G = nx.DiGraph(directed=True)
 G.add_edges_from(graph)
 
-# nx.draw_networkx(G, 
-#     arrows=True, 
-#     pos=graphviz_layout(G), 
-#     arrowsize=4, 
-#     font_size=5, 
-#     node_size=8000, 
-#     alpha=0.8)
-
-# plt.show()
-
 # Write to png file
 A = to_agraph(G)
+
 A.layout('dot')
-filename_png = "./graphs/rendered/%s.png" % submission_id
+filename_png = "./graphs/rendered/%s/dot.png" % submission_id
+
+# Make dir if doesn't exist
+os.makedirs(os.path.dirname(filename_png), exist_ok=True)
+A.draw(filename_png)
+
+A.layout('fdp')
+filename_png = "./graphs/rendered/%s/fdp.png" % submission_id
+A.draw(filename_png)
+
+A.layout('sfdp')
+filename_png = "./graphs/rendered/%s/sfdp.png" % submission_id
 A.draw(filename_png)
