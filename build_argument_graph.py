@@ -1,8 +1,6 @@
 from argument_detection import ArgumentPredictor
 from relations_identification import RelationsPredictor
 
-
-
 import json
 import re
 import praw
@@ -11,11 +9,6 @@ import sys
 
 ap = ArgumentPredictor()
 rp = RelationsPredictor()
-
-# print(ap.predict_argument("hello my name is"))
-# print(rp.predict_relation("i really really love potatoess", "why would you love potatoes, I hate them"))
-
-arg_graph = []
 
 # download dataset for sentence tokenizer
 # nltk.download('punkt')
@@ -42,13 +35,17 @@ def clean_sentences(sentences):
 # Create new praw instance with credentials from praw.ini
 reddit_instance = praw.Reddit('arg-mining')
 
+submission_id = sys.argv[1]
+
 # Get submission instance
-submission = praw.models.Submission(id=sys.argv[1], reddit=reddit_instance)
+submission = praw.models.Submission(id=submission_id, reddit=reddit_instance)
 
 # Remove "replace more" from comments results (expand full comment tree)
 submission.comments.replace_more(limit=1)
 
-# Get full comment tree under top level comments and add to arg_threads
+pairs = []
+
+# Get full comment tree under top level comments and add all argument pairs
 for comment in submission.comments.list():
 
     # All arg sentences in the current comment
@@ -64,28 +61,20 @@ for comment in submission.comments.list():
     if reply_sentences:
         for comment_sentence in comment_sentences:
             for reply_sentence in reply_sentences:
-                if rp.predict_relation(comment_sentence, reply_sentence) == False:
-                    arg_graph.append((comment_sentence, reply_sentence))
+                pairs.append((comment_sentence, reply_sentence))
+
+# Predict relations for all pairs
+arg_graph = [pair for pair, not_attacking in zip(pairs, rp.predict_relations(pairs)) if not not_attacking]
+
+
+arg_graph_dict = {
+    "id": submission_id,
+    "title": submission.title,
+    "graph": arg_graph
+}
+
+filename = "./graphs/%s.json" % submission_id
+with open(filename, "w") as f:
+    json.dump(arg_graph_dict, f)
 
 print(arg_graph)
-
-# # Add sentences from submission title, body and comments to arg_threads array
-# for submission in reddit.subreddit(sys.argv[1]).hot(limit=500):
-#     # Add submission body and title to arg_threads[i]
-#     arg_threads[submission.id] = []
-#     arg_threads[submission.id] = arg_threads[submission.id] + nltk.sent_tokenize(submission.selftext)
-    
-#     arg_titles[submission.id] = submission.title + " ID: " + submission.id
-
-#     # Remove "replace more" from comments results
-#     submission.comments.replace_more(limit=None)
-
-#     # Get full comment tree under top level comments and add to arg_threads
-#     for comment in submission.comments.list():
-#         arg_threads[submission.id] = arg_threads[submission.id] + nltk.sent_tokenize(comment.body)
-
-
-
-
-
-

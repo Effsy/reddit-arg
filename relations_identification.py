@@ -6,8 +6,6 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.text import text_to_word_sequence
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
-
-
 class RelationsPredictor():
     
     MAX_NUM_WORDS = 50000
@@ -17,7 +15,6 @@ class RelationsPredictor():
         self.rel_model = load_model('./models/rel_identification_model.h5')
         self.word_index = self.init_word_index()
 
-    # Lemmatize all words in a sentence. Uses PoS to identify lemma
     def init_word_index(self):
         embeddings_index = {}
         with open('./word_vectors/glove.6B.100d.txt') as f:
@@ -36,6 +33,13 @@ class RelationsPredictor():
         tokens = text_to_word_sequence(text)
         return [self.word_index.get(w) for w in tokens if w in self.word_index]
 
+    def texts_to_sequences(self, texts):
+        sequences = []
+        for text in texts:
+            tokens = text_to_word_sequence(text)
+            sequences.append([self.word_index.get(w) for w in tokens if w in self.word_index])
+        return sequences
+
     # Predict the relation (attack or neither)
     # attack = 0
     # neither = 1
@@ -46,4 +50,14 @@ class RelationsPredictor():
         predictions = self.rel_model([originator_data, responder_data])[0]
         return np.argmax(predictions)
 
+    def predict_relations(self, pairs):
+        originator_sentences = [sentence[0] for sentence in pairs]
+        responder_sentences = [sentence[1] for sentence in pairs]
 
+        originator_data = pad_sequences(self.texts_to_sequences(originator_sentences), maxlen=RelationsPredictor.MAX_SEQUENCE_LENGTH)
+        responder_data = pad_sequences(self.texts_to_sequences(responder_sentences), maxlen=RelationsPredictor.MAX_SEQUENCE_LENGTH)
+        
+        predictions = self.rel_model([originator_data, responder_data])
+        # print(predictions)
+        # print(np.argmax(predictions, axis=1).   shape)
+        return np.argmax(predictions, axis=1).tolist()
