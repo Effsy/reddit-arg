@@ -78,6 +78,7 @@ arg_graph = [(pair[1], pair[0]) for pair in arg_graph]
 # Remove duplicates
 arg_graph = list(set(arg_graph))
 
+# Save to file
 arg_graph_dict = {
     "id": submission_id,
     "title": submission.title,
@@ -87,5 +88,3 @@ arg_graph_dict = {
 filename = "./graphs/data/%s.json" % submission_id
 with open(filename, "w") as f:
     json.dump(arg_graph_dict, f)
-
-print(arg_graph)
