@@ -10,6 +10,10 @@ source env/bin/activate
 pip3 install -r requirements.txt
 ```
 
+Download the Wikipedia 100d glove word vectors from https://nlp.stanford.edu/projects/glove/
+Save the file to `./word_vectors/glove.6B.100d.txt`
+
+
 ## Configuration
 
 PRAW requires configurations. Create a `praw.ini` file in the root directory as follows:
