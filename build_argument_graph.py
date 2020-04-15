@@ -7,6 +7,8 @@ import praw
 import nltk
 import argparse
 
+import networkx as nx
+
 def clean_text(text):
     # Replace utf-8 single quotes with ascii apostrophes
     text = re.sub(r"(\u2018|\u2019)", "'", text)
@@ -64,8 +66,6 @@ parser.add_argument('--prune', nargs='?', type=int, help='the minimum number of 
 args = parser.parse_args()
 print(args)
 
-
-
 # Instantiate Models
 ap = ArgumentPredictor()
 rp = RelationsPredictor()
@@ -96,7 +96,7 @@ arg_graph = [(pair[1], pair[0]) for pair in arg_graph]
 # Remove duplicates
 arg_graph = list(set(arg_graph))
 
-# Save to file
+# Save to json file
 arg_graph_dict = {
     "id": submission_id,
     "title": submission.title,
@@ -107,3 +107,7 @@ filename = "./graphs/data/%s.json" % submission_id
 with open(filename, "w") as f:
     json.dump(arg_graph_dict, f)
 
+# Save to graph format
+G = nx.DiGraph(directed=True)
+G.add_edges_from(arg_graph)
+nx.write_gexf(G, "./graphs/data/%s.gexf" % submission_id)
