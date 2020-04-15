@@ -5,13 +5,7 @@ import json
 import re
 import praw
 import nltk
-import sys
-
-ap = ArgumentPredictor()
-rp = RelationsPredictor()
-
-# download dataset for sentence tokenizer
-# nltk.download('punkt')
+import argparse
 
 def clean_text(text):
     # Replace utf-8 single quotes with ascii apostrophes
@@ -38,10 +32,51 @@ def clean_sentences(sentences):
     sentences = list(set(sentences))
     return sentences
 
+def pair_comments_and_replies(submission):
+    pairs = []
+
+    # Get full comment tree under top level comments and add all argument pairs
+    for comment in submission.comments.list():
+
+        # All arg sentences in the current comment
+        comment_sentences = [sentence for sentence in nltk.sent_tokenize(comment.body)]
+        comment_sentences = clean_sentences(comment_sentences)
+        comment_sentences = [sentence for sentence in comment_sentences if ap.is_arg(sentence)]
+        
+        # All arg sentences in all replies to the current comment
+        reply_sentences = [sentence for reply in comment.replies.list() for sentence in nltk.sent_tokenize(reply.body) ]
+        reply_sentences = clean_sentences(reply_sentences)
+        reply_sentences = [sentence for sentence in reply_sentences if ap.is_arg(sentence)]
+        
+        if reply_sentences:
+            for comment_sentence in comment_sentences:
+                for reply_sentence in reply_sentences:
+                    pairs.append((comment_sentence, reply_sentence))
+
+    return pairs
+
+# Parse argument from command line
+parser = argparse.ArgumentParser(description='Generate an argument graph for a thread in the subreddit Change My View')
+parser.add_argument('id', help='the maximum number of comments deep')
+parser.add_argument('--depth', type=int, nargs='?', help='the maximum number of comments deep')
+parser.add_argument('--prune', nargs='?', type=int, help='the minimum number of edges that an argument must have')
+
+args = parser.parse_args()
+print(args)
+
+
+
+# Instantiate Models
+ap = ArgumentPredictor()
+rp = RelationsPredictor()
+
+# download dataset for sentence tokenizer
+# nltk.download('punkt')
+
 # Create new praw instance with credentials from praw.ini
 reddit_instance = praw.Reddit('arg-mining')
 
-submission_id = sys.argv[1]
+submission_id = args.id
 
 # Get submission instance
 submission = praw.models.Submission(id=submission_id, reddit=reddit_instance)
@@ -49,25 +84,8 @@ submission = praw.models.Submission(id=submission_id, reddit=reddit_instance)
 # Remove "replace more" from comments results (expand full comment tree)
 submission.comments.replace_more(limit=1)
 
-pairs = []
-
-# Get full comment tree under top level comments and add all argument pairs
-for comment in submission.comments.list():
-
-    # All arg sentences in the current comment
-    comment_sentences = [sentence for sentence in nltk.sent_tokenize(comment.body)]
-    comment_sentences = clean_sentences(comment_sentences)
-    comment_sentences = [sentence for sentence in comment_sentences if ap.is_arg(sentence)]
-    
-    # All arg sentences in all replies to the current comment
-    reply_sentences = [sentence for reply in comment.replies.list() for sentence in nltk.sent_tokenize(reply.body) ]
-    reply_sentences = clean_sentences(reply_sentences)
-    reply_sentences = [sentence for sentence in reply_sentences if ap.is_arg(sentence)]
-    
-    if reply_sentences:
-        for comment_sentence in comment_sentences:
-            for reply_sentence in reply_sentences:
-                pairs.append((comment_sentence, reply_sentence))
+# Extract pairs of arguments from thread
+pairs = pair_comments_and_replies(submission)
 
 # Predict relations for all pairs
 arg_graph = [pair for pair, not_attacking in zip(pairs, rp.predict_relations(pairs)) if not not_attacking]
@@ -88,3 +106,4 @@ arg_graph_dict = {
 filename = "./graphs/data/%s.json" % submission_id
 with open(filename, "w") as f:
     json.dump(arg_graph_dict, f)
+
