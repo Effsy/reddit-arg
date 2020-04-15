@@ -2,7 +2,9 @@
 
 ## Setup
 
-Create python virtual environment and install dependencies
+Make sure python 3 is installed.
+
+Create a python virtual environment and install the dependencies:
 ```bash
 python3 -m venv env
 source env/bin/activate
@@ -14,6 +16,7 @@ Download the (Wikipedia 100d glove word vectors)[https://nlp.stanford.edu/projec
 Save the file to `./word_vectors/glove.6B.100d.txt`
 
 The relations model is a large file that must be downloaded separately here:
+Save the file to `./models/rel_identification.h5`
 
 ## Configuration
 
