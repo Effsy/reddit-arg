@@ -2,7 +2,7 @@
 
 ## Setup
 
-Create virtualenv and install dependencies
+Create python virtual environment and install dependencies
 ```bash
 python3 -m venv env
 source env/bin/activate
@@ -10,13 +10,15 @@ source env/bin/activate
 pip3 install -r requirements.txt
 ```
 
-Download the Wikipedia 100d glove word vectors from https://nlp.stanford.edu/projects/glove/
+Download the (Wikipedia 100d glove word vectors)[https://nlp.stanford.edu/projects/glove/]
 Save the file to `./word_vectors/glove.6B.100d.txt`
 
+The relations model is a large file that must be downloaded separately here:
 
 ## Configuration
 
-PRAW requires configurations. Create a `praw.ini` file in the root directory as follows:
+PRAW requires configuration. (Sign up for access to the Reddit API)[https://www.reddit.com/wiki/api#wiki_reddit_api_access] to retrieve the credentials.
+Create a `praw.ini` file in the root directory, using your credentials where appropriate:
 
 ```bash
 [arg-mining]
@@ -28,17 +30,46 @@ user_agent=USER_AGENT
 username=USERNAME
 password=PASSWORD
 ```
-## Run scripts
+## Running the Code
 
-`python3 1_gather_data`
-`python3 2_clean_data`
-; `python3 3_gather_data`
-; `python3 1_gather_data`
-; `python3 1_gather_data`
+### Model Development Scripts
 
+The notebooks contain the source code used to build the models and outline the process.
 
-1 gather data
-subtask - label gathered data
-2 clean data
-3 extract features
-4 classify labelled data
+These should be run in any (jupyter notebook environment)[https://github.com/jupyter/notebook]
+
+```bash
+1_fetch_data_argument_detection.ipynb
+2_eda_argument_detection.ipynb
+3_argument_detection.ipynb
+4_fetch_data_relations_identification.ipynb
+5_relations_identification.ipynb
+```
+
+### Running the Argumentation Miner
+
+The argumentation miner is a python script that can simply be run with:
+
+```bash
+python3 build_argument_graph.py <THREAD_ID>
+```
+
+This will build the argumentation graph for the thread ID provided. The thread ID for a reddit thread is a 6 character string can be found in the url of the post.
+
+The graphs are stored in `./graphs/data/<THREAD_ID>.json` 
+
+### Rendering the Graphs
+
+A utility is provided for rendering the graphs for visualisation. This can be run with:
+
+```bash
+python3 draw_graph.py <THREAD_ID>
+```
+
+### Using the Argument Prediction and Relations Prediction Modules
+
+## Source Code Structure
+
+The models are stored in the ./models file 
+
+...? is this necessary?
