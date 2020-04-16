@@ -8,7 +8,7 @@ from networkx.drawing.nx_agraph import graphviz_layout, to_agraph
 import matplotlib.pyplot as plt
 
 submission_id = sys.argv[1]
-filename = "./graphs/data/%s.json" % submission_id
+filename = f"./graphs/data/{submission_id}.json"
 
 with open(filename) as f:
     json_obj = json.load(f)
@@ -27,16 +27,16 @@ G.add_edges_from(graph)
 A = to_agraph(G)
 
 A.layout('dot')
-filename_png = "./graphs/rendered/%s/dot.png" % submission_id
+filename_png = f"./graphs/rendered/{submission_id}/dot.png"
 
 # Make dir if doesn't exist
 os.makedirs(os.path.dirname(filename_png), exist_ok=True)
 A.draw(filename_png)
 
 A.layout('fdp')
-filename_png = "./graphs/rendered/%s/fdp.png" % submission_id
+filename_png = f"./graphs/rendered/{submission_id}/fdp.png"
 A.draw(filename_png)
 
 A.layout('sfdp')
-filename_png = "./graphs/rendered/%s/sfdp.png" % submission_id
+filename_png = f"./graphs/rendered/{submission_id}/sfdp.png"
 A.draw(filename_png)

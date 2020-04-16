@@ -1,13 +1,16 @@
 from argument_detection import ArgumentPredictor
 from relations_identification import RelationsPredictor
 
+import os
 import json
 import re
 import praw
 import nltk
 import argparse
+import itertools
 
 import networkx as nx
+from networkx.readwrite import json_graph
 
 def clean_text(text):
     # Replace utf-8 single quotes with ascii apostrophes
@@ -37,31 +40,66 @@ def clean_sentences(sentences):
 def pair_comments_and_replies(submission):
     pairs = []
 
+    # All arguments in the submission body
+    body_sentences = [sentence for sentence in nltk.sent_tokenize(submission.selftext)]
+    body_sentences = clean_sentences(body_sentences)
+    body_sentences = [sentence for sentence in body_sentences if ap.is_arg(sentence)]
+    body_sentences.append(clean_text(submission.title))
+    
+    # All arguments in all comments
+    comment_sentences = []
+    for comment in submission.comments.list():
+        comment_sentences = [sentence for sentence in nltk.sent_tokenize(comment.body)]
+        comment_sentences = clean_sentences(comment_sentences)
+        comment_sentences = [sentence for sentence in comment_sentences if ap.is_arg(sentence)]
+
+    pairs = list(itertools.product(body_sentences, comment_sentences))
+
     # Get full comment tree under top level comments and add all argument pairs
     for comment in submission.comments.list():
 
-        # All arg sentences in the current comment
+        # All arguments in the current comment
         comment_sentences = [sentence for sentence in nltk.sent_tokenize(comment.body)]
         comment_sentences = clean_sentences(comment_sentences)
         comment_sentences = [sentence for sentence in comment_sentences if ap.is_arg(sentence)]
         
-        # All arg sentences in all replies to the current comment
+        # All arguments in all replies to the current comment
         reply_sentences = [sentence for reply in comment.replies.list() for sentence in nltk.sent_tokenize(reply.body) ]
         reply_sentences = clean_sentences(reply_sentences)
         reply_sentences = [sentence for sentence in reply_sentences if ap.is_arg(sentence)]
-        
-        if reply_sentences:
-            for comment_sentence in comment_sentences:
-                for reply_sentence in reply_sentences:
-                    pairs.append((comment_sentence, reply_sentence))
+
+        pairs = pairs + list(itertools.product(comment_sentences, reply_sentences))
 
     return pairs
 
-# Parse argument from command line
-parser = argparse.ArgumentParser(description='Generate an argument graph for a thread in the subreddit Change My View')
+def pair_all_arguments(submission):
+    
+    # All arguments in the submission body
+    body_sentences = [sentence for sentence in nltk.sent_tokenize(submission.selftext)]
+    body_sentences = clean_sentences(body_sentences)
+    body_sentences = [sentence for sentence in body_sentences if ap.is_arg(sentence)]
+    body_sentences.append(clean_text(submission.title))
+
+    sentences = body_sentences
+
+    # All arguments in all comments
+    for comment in submission.comments.list():
+        comment_sentences = [sentence for sentence in nltk.sent_tokenize(comment.body)]
+        comment_sentences = clean_sentences(comment_sentences)
+        comment_sentences = [sentence for sentence in comment_sentences if ap.is_arg(sentence)]
+        
+        sentences = sentences + comment_sentences
+    
+    # All permutations of pairs
+    return list(itertools.permutations(sentences))
+
+# Parse arguments from command line
+parser = argparse.ArgumentParser(description='Generate an argument graph for a thread in the subreddit Change My View (CMV).')
 parser.add_argument('id', help='the maximum number of comments deep')
-parser.add_argument('--depth', type=int, nargs='?', help='the maximum number of comments deep')
-parser.add_argument('--prune', nargs='?', type=int, help='the minimum number of edges that an argument must have')
+parser.add_argument('-M', action='store_true', 
+    help='the pairing mode. By default, all possible pairs are made. Set the flag to only pair replies with comments.')
+parser.add_argument('--depth', type=int, nargs='?', help='the maximum number of comments deep.')
+# parser.add_argument('--prune', nargs='?', type=int, default=0, help='the minimum degree of a node. If a node has less than the specified degree, it is pruned.')
 
 args = parser.parse_args()
 print(args)
@@ -70,22 +108,26 @@ print(args)
 ap = ArgumentPredictor()
 rp = RelationsPredictor()
 
-# download dataset for sentence tokenizer
+# Download dataset for sentence tokenizer
 # nltk.download('punkt')
 
 # Create new praw instance with credentials from praw.ini
 reddit_instance = praw.Reddit('arg-mining')
-
 submission_id = args.id
 
 # Get submission instance
 submission = praw.models.Submission(id=submission_id, reddit=reddit_instance)
 
 # Remove "replace more" from comments results (expand full comment tree)
-submission.comments.replace_more(limit=1)
+submission.comments.replace_more(limit=args.depth)
 
 # Extract pairs of arguments from thread
-pairs = pair_comments_and_replies(submission)
+pairs = []
+if args.M:
+    # Pair all arguments
+    pairs = pair_comments_and_replies(submission)
+else:
+    pairs = pair_all_arguments(submission)
 
 # Predict relations for all pairs
 arg_graph = [pair for pair, not_attacking in zip(pairs, rp.predict_relations(pairs)) if not not_attacking]
@@ -96,18 +138,29 @@ arg_graph = [(pair[1], pair[0]) for pair in arg_graph]
 # Remove duplicates
 arg_graph = list(set(arg_graph))
 
+# Generate NetworkX graph
+G = nx.DiGraph(directed=True)
+G.add_edges_from(arg_graph)
+
 # Save to json file
 arg_graph_dict = {
     "id": submission_id,
     "title": submission.title,
-    "graph": arg_graph
+    "tuple_graph": arg_graph,
+    "adjacency_graph": json_graph.adjacency_data(G)
+    # "tree_graph": json_graph.tree_data(G, root=clean_text(submission.title)),
 }
 
-filename = "./graphs/data/%s.json" % submission_id
+filename = f"./graphs/data/{submission_id}/{submission_id}.json"
+
+# Make dir if doesn't exist
+os.makedirs(os.path.dirname(filename), exist_ok=True)
+
 with open(filename, "w") as f:
     json.dump(arg_graph_dict, f)
 
 # Save to graph format
-G = nx.DiGraph(directed=True)
-G.add_edges_from(arg_graph)
-nx.write_gexf(G, "./graphs/data/%s.gexf" % submission_id)
+nx.write_gexf(G, f"./graphs/data/{submission_id}/{submission_id}.gexf")
+
+# # Save to adjacency list
+# nx.write_adjlist(G, "./graphs/data/%s/%s" % submission_id)
