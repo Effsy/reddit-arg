@@ -70,7 +70,7 @@ def pair_comments_and_replies(submission):
 
         pairs = pairs + list(itertools.product(comment_sentences, reply_sentences))
 
-    return pairs
+    return list(pairs)
 
 def pair_all_arguments(submission):
     
@@ -79,9 +79,9 @@ def pair_all_arguments(submission):
     body_sentences = clean_sentences(body_sentences)
     body_sentences = [sentence for sentence in body_sentences if ap.is_arg(sentence)]
     body_sentences.append(clean_text(submission.title))
-
+    
     sentences = body_sentences
-
+    
     # All arguments in all comments
     for comment in submission.comments.list():
         comment_sentences = [sentence for sentence in nltk.sent_tokenize(comment.body)]
@@ -89,9 +89,11 @@ def pair_all_arguments(submission):
         comment_sentences = [sentence for sentence in comment_sentences if ap.is_arg(sentence)]
         
         sentences = sentences + comment_sentences
-    
-    # All permutations of pairs
-    return list(itertools.permutations(sentences))
+    pairs = itertools.permutations(sentences, 2)
+    return list(pairs)
+
+from time import time
+start = time()
 
 # Parse arguments from command line
 parser = argparse.ArgumentParser(description='Generate an argument graph for a thread in the subreddit Change My View (CMV).')
@@ -122,25 +124,47 @@ submission = praw.models.Submission(id=submission_id, reddit=reddit_instance)
 submission.comments.replace_more(limit=args.depth)
 
 # Extract pairs of arguments from thread
-pairs = []
+pairs = None
 if args.M:
     # Pair all arguments
     pairs = pair_comments_and_replies(submission)
 else:
     pairs = pair_all_arguments(submission)
 
-# Predict relations for all pairs
-arg_graph = [pair for pair, not_attacking in zip(pairs, rp.predict_relations(pairs)) if not not_attacking]
+print("number of pairs")
+print(len(pairs))
+
+
+
+
+print("got pairs in")
+print((time() - start)/60)
+
+# Predict relations for all pairs (predict_relations returns false if attacking)
+arg_graph = itertools.compress(pairs, rp.predict_relations(pairs))
+
+print("got relations in")
+print((time() - start)/60)
+
+# arg_graph = [pair for pair, not_attacking in zip(pairs, rp.predict_relations(pairs)) if not not_attacking]
 
 # Swap pairs (in directed graphs, typically the first node points to the second)
 arg_graph = [(pair[1], pair[0]) for pair in arg_graph]
 
+print("swapped pairs in")
+print((time() - start)/60)
+
 # Remove duplicates
 arg_graph = list(set(arg_graph))
+print("removed duplicates in")
+print((time() - start)/60)
 
 # Generate NetworkX graph
 G = nx.DiGraph(directed=True)
 G.add_edges_from(arg_graph)
+
+print("num of nodes")
+print(G.number_of_nodes())
 
 # Save to json file
 arg_graph_dict = {
@@ -148,7 +172,6 @@ arg_graph_dict = {
     "title": submission.title,
     "tuple_graph": arg_graph,
     "adjacency_graph": json_graph.adjacency_data(G)
-    # "tree_graph": json_graph.tree_data(G, root=clean_text(submission.title)),
 }
 
 filename = f"./graphs/data/{submission_id}/{submission_id}.json"
@@ -164,3 +187,7 @@ nx.write_gexf(G, f"./graphs/data/{submission_id}/{submission_id}.gexf")
 
 # # Save to adjacency list
 # nx.write_adjlist(G, "./graphs/data/%s/%s" % submission_id)
+
+
+print("total time in minutes")
+print((time() - start)/60)
