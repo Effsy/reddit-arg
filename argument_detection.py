@@ -19,6 +19,8 @@ class ArgumentPredictor():
 
     def __init__(self):
         nltk.download('wordnet')
+        nltk.download('averaged_perceptron_tagger')
+        nltk.download('vader_lexicon')
 
         self.ngram_model = joblib.load('./models/arg_detection_ngram_model.pkl')
         self.meta_model = joblib.load('./models/arg_detection_meta_model.pkl')

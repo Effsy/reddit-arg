@@ -67,7 +67,7 @@ class RelationsPredictor():
         return not np.argmax(predictions)
 
     def predict_relations(self, pairs):
-         """Predict the relation for a list of pairs
+        """Predict the relation for a list of pairs
         
         neither = 0
         attack = 1

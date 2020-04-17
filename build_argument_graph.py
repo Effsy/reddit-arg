@@ -111,7 +111,7 @@ ap = ArgumentPredictor()
 rp = RelationsPredictor()
 
 # Download dataset for sentence tokenizer
-# nltk.download('punkt')
+nltk.download('punkt')
 
 # Create new praw instance with credentials from praw.ini
 reddit_instance = praw.Reddit('arg-mining')
