@@ -11,15 +11,20 @@ import string
 import numpy as np
 
 class ArgumentPredictor():
+    """A class used to predict whether a sentence is argumentative.
+    
+    The class requires the n-gram model to be stored in ./models/arg_detection_ngram_model.pkl
+    The class requires the meta model to be stored in ./models/arg_detection_meta_model.pkl
+    """
 
     def __init__(self):
         nltk.download('wordnet')
 
         self.ngram_model = joblib.load('./models/arg_detection_ngram_model.pkl')
         self.meta_model = joblib.load('./models/arg_detection_meta_model.pkl')
-
-    # Lemmatize all words in a sentence. Uses PoS to identify lemma
+    
     def lemmatize_sentence(self, sentence):
+        """Lemmatize all words in a sentence. Uses PoS to identify lemma"""
         wnl = WordNetLemmatizer()
         lemma_array = []
 
@@ -70,6 +75,11 @@ class ArgumentPredictor():
         return np.column_stack([ngram_prediction, sentiment, sentence_length, pos_counts])
 
     def predict_argument(self, sentence):
+        """Predicts whether a single argument is argumentative.
+        
+        returns a string "arg" if argumentative or "not_arg" if not argumentative
+        """
+
         # Remove punctuation
         sentence_cleaned = sentence.translate(str.maketrans('', '', string.punctuation))
         features = self.extract_features(sentence_cleaned)
@@ -77,13 +87,6 @@ class ArgumentPredictor():
         return self.meta_model.predict(features)[0]
 
     def is_arg(self, sentence):
-        return self.predict_argument(sentence) == "arg"
-
-
-    # def filter_arguments(self, sentence_list):
-    #     """Filters all non-argumentative sentences from the list and returns only those that are argumentative.
-    #     Uses predictive models, which may lead to some incorrect classifications"""
-
+        """Predicts whether a single argument is argumentative."""
         
-
-
+        return self.predict_argument(sentence) == "arg"
