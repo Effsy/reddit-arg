@@ -29,7 +29,7 @@ class ArgumentPredictor():
         """Lemmatize all words in a sentence. Uses PoS to identify lemma"""
         wnl = WordNetLemmatizer()
         lemma_array = []
-
+        # Adapted from: https://stackoverflow.com/a/39498745
         for word, tag in pos_tag(word_tokenize(sentence)):
             if tag.startswith("NN"):
                 lemma_array.append(wnl.lemmatize(word, pos='n'))

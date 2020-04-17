@@ -2,17 +2,23 @@ import os
 import sys
 import json
 import textwrap
+import argparse
 
 import networkx as nx
 from networkx.drawing.nx_agraph import graphviz_layout, to_agraph
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
-submission_id = sys.argv[1]
-filename = f"./graphs/data/{submission_id}.json"
+# Parse arguments from command line
+parser = argparse.ArgumentParser(description='Generate an argument graph for a thread in the subreddit Change My View (CMV).')
+parser.add_argument('id', help='the thread ID')
+args = parser.parse_args()
+
+submission_id = args.id
+filename = f"./graphs/data/{submission_id}/{submission_id}.json"
 
 with open(filename) as f:
     json_obj = json.load(f)
-    graph = json_obj["graph"]
+    graph = json_obj["tuple_graph"]
 
 # Make sentences wrap for easier reading
 for node in graph:
@@ -22,6 +28,7 @@ for node in graph:
 # draw graph
 G = nx.DiGraph(directed=True)
 G.add_edges_from(graph)
+
 
 # Write to png file
 A = to_agraph(G)

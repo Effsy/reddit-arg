@@ -4,6 +4,13 @@
 
 Make sure python 3 is installed.
 
+Make sure (graphviz)[https://www.graphviz.org/download/] is installed. This is required for saving the graphs.
+
+For linux, this can be done with:
+```bash
+sudo apt-get installgraphviz
+```
+
 Create a python virtual environment and install the dependencies:
 ```bash
 python3 -m venv env
@@ -41,6 +48,8 @@ The notebooks contain the source code used to build the models and outline the p
 
 These should be run in any (jupyter notebook environment)[https://github.com/jupyter/notebook]
 
+NOTE: Notebook 5 should be run in Google Colab due to the higher resource requirements.
+
 ```bash
 1_fetch_data_argument_detection.ipynb
 2_eda_argument_detection.ipynb
@@ -63,7 +72,8 @@ The graphs are stored in `./graphs/data/<THREAD_ID>.json`
 
 ### Rendering the Graphs
 
-A utility is provided for rendering the graphs for visualisation. This can be run with:
+The .gexf file can be opened with a graph visualation program such as Gephi.
+A utility is also provided for rendering the graphs as a PNG. This can be run with:
 
 ```bash
 python3 draw_graph.py <THREAD_ID>

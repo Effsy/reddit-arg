@@ -97,11 +97,10 @@ start = time()
 
 # Parse arguments from command line
 parser = argparse.ArgumentParser(description='Generate an argument graph for a thread in the subreddit Change My View (CMV).')
-parser.add_argument('id', help='the maximum number of comments deep')
+parser.add_argument('id', help='the thread ID')
 parser.add_argument('-M', action='store_true', 
     help='the pairing mode. By default, all possible pairs are made. Set the flag to only pair replies with comments.')
 parser.add_argument('--depth', type=int, nargs='?', help='the maximum number of comments deep.')
-# parser.add_argument('--prune', nargs='?', type=int, default=0, help='the minimum degree of a node. If a node has less than the specified degree, it is pruned.')
 
 args = parser.parse_args()
 print(args)
@@ -135,29 +134,24 @@ print("number of pairs")
 print(len(pairs))
 
 
-
-
 print("got pairs in")
 print((time() - start)/60)
 
 # Predict relations for all pairs (predict_relations returns false if attacking)
 arg_graph = itertools.compress(pairs, rp.predict_relations(pairs))
 
-print("got relations in")
-print((time() - start)/60)
+
 
 # arg_graph = [pair for pair, not_attacking in zip(pairs, rp.predict_relations(pairs)) if not not_attacking]
+
+print("got relations in")
+print((time() - start)/60)
 
 # Swap pairs (in directed graphs, typically the first node points to the second)
 arg_graph = [(pair[1], pair[0]) for pair in arg_graph]
 
-print("swapped pairs in")
-print((time() - start)/60)
-
 # Remove duplicates
 arg_graph = list(set(arg_graph))
-print("removed duplicates in")
-print((time() - start)/60)
 
 # Generate NetworkX graph
 G = nx.DiGraph(directed=True)
@@ -184,10 +178,6 @@ with open(filename, "w") as f:
 
 # Save to graph format
 nx.write_gexf(G, f"./graphs/data/{submission_id}/{submission_id}.gexf")
-
-# # Save to adjacency list
-# nx.write_adjlist(G, "./graphs/data/%s/%s" % submission_id)
-
 
 print("total time in minutes")
 print((time() - start)/60)
