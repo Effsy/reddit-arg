@@ -1,3 +1,7 @@
+# This script allows for an argumentation graph to be built from any reddit thread.
+# The intended subreddit to be used is r/ChangeMyView (CMV)
+# The argument predictor and relations predictor modules are used, which contain models trained on CMV
+
 from argument_detection import ArgumentPredictor
 from relations_identification import RelationsPredictor
 
@@ -139,7 +143,6 @@ print((time() - start)/60)
 
 # Predict relations for all pairs (predict_relations returns false if attacking)
 arg_graph = itertools.compress(pairs, rp.predict_relations(pairs))
-
 
 
 # arg_graph = [pair for pair, not_attacking in zip(pairs, rp.predict_relations(pairs)) if not not_attacking]

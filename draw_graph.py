@@ -29,12 +29,17 @@ for node in graph:
 G = nx.DiGraph(directed=True)
 G.add_edges_from(graph)
 
-
+print("made it")
 # Write to png file
 A = to_agraph(G)
 
+print("made it")
+
 A.layout('dot')
+print("made it")
 filename_png = f"./graphs/rendered/{submission_id}/dot.png"
+
+print("made it")
 
 # Make dir if doesn't exist
 os.makedirs(os.path.dirname(filename_png), exist_ok=True)
@@ -43,7 +48,7 @@ A.draw(filename_png)
 A.layout('fdp')
 filename_png = f"./graphs/rendered/{submission_id}/fdp.png"
 A.draw(filename_png)
-
+print("made it")
 A.layout('sfdp')
 filename_png = f"./graphs/rendered/{submission_id}/sfdp.png"
 A.draw(filename_png)

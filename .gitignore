@@ -9,4 +9,4 @@ praw.ini
 
 # Too large files that must be added separately
 word_vectors/
-models/rel_identification_model.h5
+models/rel_prediction_model.h5
