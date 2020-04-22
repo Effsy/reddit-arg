@@ -63,10 +63,10 @@ NOTE: Notebook 5 should be run in Google Colab due to the higher resource requir
 The argumentation miner is a python script that can simply be run with:
 
 ```bash
-python3 build_argument_graph.py <THREAD_ID>
+python3 build_graph.py <THREAD_ID>
 ```
 
-This will build the argumentation graph for the thread ID provided. The thread ID for a reddit thread is a 6 character string can be found in the url of the post.
+This will build the argumentation graph for the thread ID provided. The thread ID for a reddit thread is a 6 character string which can be found in the url of the post.
 
 The graphs are stored in `./graphs/data/<THREAD_ID>.json` 
 

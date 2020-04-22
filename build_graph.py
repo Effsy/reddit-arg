@@ -104,7 +104,7 @@ parser = argparse.ArgumentParser(description='Generate an argument graph for a t
 parser.add_argument('id', help='the thread ID')
 parser.add_argument('-M', action='store_true', 
     help='the pairing mode. By default, all possible pairs are made. Set the flag to only pair replies with comments.')
-parser.add_argument('--depth', type=int, nargs='?', help='the maximum number of comments deep.')
+parser.add_argument('--P', type=int, nargs='?', help='the maximum number of comments deep.')
 
 args = parser.parse_args()
 print(args)
