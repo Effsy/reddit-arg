@@ -13,8 +13,8 @@ import numpy as np
 class ArgumentPredictor():
     """A class used to predict whether a sentence is argumentative.
     
-    The class requires the n-gram model to be stored in ./models/arg_detection_ngram_model.pkl
-    The class requires the meta model to be stored in ./models/arg_detection_meta_model.pkl
+    The class requires the n-gram model to be stored in ./models/arg_prediction_ngram_model.pkl
+    The class requires the meta model to be stored in ./models/arg_prediction_meta_model.pkl
     """
 
     def __init__(self):
@@ -22,8 +22,8 @@ class ArgumentPredictor():
         nltk.download('averaged_perceptron_tagger')
         nltk.download('vader_lexicon')
 
-        self.ngram_model = joblib.load('./models/arg_detection_ngram_model.pkl')
-        self.meta_model = joblib.load('./models/arg_detection_meta_model.pkl')
+        self.ngram_model = joblib.load('./models/arg_prediction_ngram_model.pkl')
+        self.meta_model = joblib.load('./models/arg_prediction_meta_model.pkl')
     
     def lemmatize_sentence(self, sentence):
         """Lemmatize all words in a sentence. Uses PoS to identify lemma"""

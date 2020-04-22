@@ -6,10 +6,10 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.text import text_to_word_sequence
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
-class RelationsPredictor():
-    """A class used to predict the relations between arguments.
+class RelationPredictor():
+    """A class used to predict the relation between arguments.
     
-    The class requires the relations model to be stored in ./models/rel_identification_model.h5
+    The class requires the relation model to be stored in ./models/rel_prediction_model.h5
     The class requires the word embeddings to be stored in ./word_vectors/glove.6B.100d.txt
     """
 
@@ -18,7 +18,7 @@ class RelationsPredictor():
     MAX_SEQUENCE_LENGTH = 200
     
     def __init__(self):
-        self.rel_model = load_model('./models/rel_identification_model.h5')
+        self.rel_model = load_model('./models/rel_prediction_model.h5')
         self.word_index = self.init_word_index()
 
     def init_word_index(self):
@@ -27,7 +27,7 @@ class RelationsPredictor():
         embeddings_index = {}
         with open('./word_vectors/glove.6B.100d.txt') as f:
             for line in f:
-                if len(embeddings_index) >= RelationsPredictor.MAX_NUM_WORDS:
+                if len(embeddings_index) >= RelationPredictor.MAX_NUM_WORDS:
                     break
                 values = line.split()
                 word = values[0]
@@ -57,8 +57,8 @@ class RelationsPredictor():
         neither = 0
         attack = 1
         """
-        originator_data = pad_sequences([self.text_to_sequence(originator)], maxlen=RelationsPredictor.MAX_SEQUENCE_LENGTH)
-        responder_data = pad_sequences([self.text_to_sequence(responder)], maxlen=RelationsPredictor.MAX_SEQUENCE_LENGTH)
+        originator_data = pad_sequences([self.text_to_sequence(originator)], maxlen=RelationPredictor.MAX_SEQUENCE_LENGTH)
+        responder_data = pad_sequences([self.text_to_sequence(responder)], maxlen=RelationPredictor.MAX_SEQUENCE_LENGTH)
         
         # Predict (attack = 0, neither = 1)
         predictions = self.rel_model([originator_data, responder_data])[0]
@@ -77,8 +77,8 @@ class RelationsPredictor():
         originator_sentences = [sentence[0] for sentence in pairs]
         responder_sentences = [sentence[1] for sentence in pairs]
         print("working")
-        originator_data = pad_sequences(self.texts_to_sequences(originator_sentences), maxlen=RelationsPredictor.MAX_SEQUENCE_LENGTH)
-        responder_data = pad_sequences(self.texts_to_sequences(responder_sentences), maxlen=RelationsPredictor.MAX_SEQUENCE_LENGTH)
+        originator_data = pad_sequences(self.texts_to_sequences(originator_sentences), maxlen=RelationPredictor.MAX_SEQUENCE_LENGTH)
+        responder_data = pad_sequences(self.texts_to_sequences(responder_sentences), maxlen=RelationPredictor.MAX_SEQUENCE_LENGTH)
         
         # Predict (attack = 0, neither = 1)
         predictions = self.rel_model([originator_data, responder_data])

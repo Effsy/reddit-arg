@@ -2,8 +2,8 @@
 # The intended subreddit to be used is r/ChangeMyView (CMV)
 # The argument predictor and relations predictor modules are used, which contain models trained on CMV
 
-from argument_detection import ArgumentPredictor
-from relations_identification import RelationsPredictor
+from argument_prediction import ArgumentPredictor
+from relation_prediction import RelationPredictor
 
 import os
 import json
@@ -111,7 +111,7 @@ print(args)
 
 # Instantiate Models
 ap = ArgumentPredictor()
-rp = RelationsPredictor()
+rp = RelationPredictor()
 
 # Download dataset for sentence tokenizer
 nltk.download('punkt')
