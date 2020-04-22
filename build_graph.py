@@ -107,7 +107,6 @@ parser.add_argument('-M', action='store_true',
 parser.add_argument('--P', type=int, nargs='?', help='the maximum number of comments deep.')
 
 args = parser.parse_args()
-print(args)
 
 # Instantiate Models
 ap = ArgumentPredictor()
