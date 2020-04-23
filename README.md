@@ -52,11 +52,11 @@ These should be run in any [jupyter notebook environment](https://github.com/jup
 NOTE: Notebook 5 should be run in Google Colab due to the higher resource requirements.
 
 ```bash
-1_fetch_data_argument_detection.ipynb
-2_eda_argument_detection.ipynb
-3_argument_detection.ipynb
-4_fetch_data_relations_identification.ipynb
-5_relations_identification.ipynb
+1_fetch_data_argument_prediction.ipynb
+2_eda_argument_prediction.ipynb
+3_argument_prediction.ipynb
+4_fetch_data_relation_prediction.ipynb
+5_relation_prediction.ipynb
 ```
 
 ### Running the Argumentation Miner
