@@ -22,7 +22,8 @@ pip3 install -r requirements.txt
 Download the [Wikipedia 100d glove word vectors](https://nlp.stanford.edu/projects/glove/)
 Save the file to `./word_vectors/glove.6B.100d.txt`
 
-The relations model is a large file that must be downloaded separately [here](https://emckclac-my.sharepoint.com/:u:/g/personal/k1764064_kcl_ac_uk/EdgorbYuivpCi9vEHPVj4JgB3Eizzaqb1EplNt_QFAohug?e=li4Smi)
+The relations model is a large file that must be downloaded separately [here](https://emckclac-my.sharepoint.com/:u:/g/personal/k1764064_kcl_ac_uk/EdgorbYuivpCi9vEHPVj4JgB3Eizzaqb1EplNt_QFAohug?e=li4Smi).
+
 Save the file to `./models/rel_identification.h5`
 
 ## Configuration
