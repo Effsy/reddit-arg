@@ -4,7 +4,7 @@
 
 Make sure python 3 is installed.
 
-Make sure (graphviz)[https://www.graphviz.org/download/] is installed. This is required for saving the graphs.
+Make sure [graphviz](https://www.graphviz.org/download/) is installed. This is required for saving the graphs.
 
 For linux, this can be done with:
 ```bash
@@ -19,7 +19,7 @@ source env/bin/activate
 pip3 install -r requirements.txt
 ```
 
-Download the (Wikipedia 100d glove word vectors)[https://nlp.stanford.edu/projects/glove/]
+Download the [Wikipedia 100d glove word vectors](https://nlp.stanford.edu/projects/glove/)
 Save the file to `./word_vectors/glove.6B.100d.txt`
 
 The relations model is a large file that must be downloaded separately here:
@@ -27,7 +27,7 @@ Save the file to `./models/rel_identification.h5`
 
 ## Configuration
 
-PRAW requires configuration. (Sign up for access to the Reddit API)[https://www.reddit.com/wiki/api#wiki_reddit_api_access] to retrieve the credentials.
+PRAW requires configuration. [Sign up for access to the Reddit API](https://www.reddit.com/wiki/api#wiki_reddit_api_access) to retrieve the credentials.
 Create a `praw.ini` file in the root directory, using your credentials where appropriate:
 
 ```bash
@@ -46,7 +46,7 @@ password=PASSWORD
 
 The notebooks contain the source code used to build the models and outline the process.
 
-These should be run in any (jupyter notebook environment)[https://github.com/jupyter/notebook]
+These should be run in any [jupyter notebook environment](https://github.com/jupyter/notebook)
 
 NOTE: Notebook 5 should be run in Google Colab due to the higher resource requirements.
 
@@ -70,6 +70,8 @@ This will build the argumentation graph for the thread ID provided. The thread I
 
 The graphs are stored in `./graphs/data/<THREAD_ID>.json` 
 
+This is a particular intensive task and may require a high amount of memory.
+
 ### Rendering the Graphs
 
 The .gexf file can be opened with a graph visualation program such as Gephi.
@@ -79,10 +81,6 @@ A utility is also provided for rendering the graphs as a PNG. This can be run wi
 python3 draw_graph.py <THREAD_ID>
 ```
 
-### Using the Argument Prediction and Relations Prediction Modules
+### Examples of Graphs
 
-## Source Code Structure
-
-The models are stored in the ./models file 
-
-...? is this necessary?
+This project contains existing examples of graphs in the `./graphs` directory.
