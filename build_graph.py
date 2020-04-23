@@ -104,7 +104,7 @@ parser = argparse.ArgumentParser(description='Generate an argument graph for a t
 parser.add_argument('id', help='the thread ID')
 parser.add_argument('-M', action='store_true', 
     help='the pairing mode. By default, all possible pairs are made. Set the flag to only pair replies with comments.')
-parser.add_argument('--P', type=int, nargs='?', help='the maximum number of comments deep.')
+parser.add_argument('--P', type=int, nargs='?', help='pre-prune comments that exceed the maximum depth chosen.')
 
 args = parser.parse_args()
 
@@ -123,7 +123,7 @@ submission_id = args.id
 submission = praw.models.Submission(id=submission_id, reddit=reddit_instance)
 
 # Remove "replace more" from comments results (expand full comment tree)
-submission.comments.replace_more(limit=args.depth)
+submission.comments.replace_more(limit=args.P)
 
 # Extract pairs of arguments from thread
 pairs = None
@@ -133,21 +133,10 @@ if args.M:
 else:
     pairs = pair_all_arguments(submission)
 
-print("number of pairs")
-print(len(pairs))
-
-
-print("got pairs in")
-print((time() - start)/60)
+print(f"{len(pairs)} pairs")
 
 # Predict relations for all pairs (predict_relations returns false if attacking)
 arg_graph = itertools.compress(pairs, rp.predict_relations(pairs))
-
-
-# arg_graph = [pair for pair, not_attacking in zip(pairs, rp.predict_relations(pairs)) if not not_attacking]
-
-print("got relations in")
-print((time() - start)/60)
 
 # Swap pairs (in directed graphs, typically the first node points to the second)
 arg_graph = [(pair[1], pair[0]) for pair in arg_graph]
@@ -159,8 +148,7 @@ arg_graph = list(set(arg_graph))
 G = nx.DiGraph(directed=True)
 G.add_edges_from(arg_graph)
 
-print("num of nodes")
-print(G.number_of_nodes())
+print(f"{G.number_of_nodes()} nodes")
 
 # Save to json file
 arg_graph_dict = {
@@ -181,5 +169,6 @@ with open(filename, "w") as f:
 # Save to graph format
 nx.write_gexf(G, f"./graphs/data/{submission_id}/{submission_id}.gexf")
 
-print("total time in minutes")
-print((time() - start)/60)
+print(f"Graph built in {(time() - start)/60} minutes")
+
+print("Graph successfully built to ./graphs/data/{submission_id}/")

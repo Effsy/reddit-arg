@@ -76,7 +76,7 @@ class RelationPredictor():
         # Extract data for each branch
         originator_sentences = [sentence[0] for sentence in pairs]
         responder_sentences = [sentence[1] for sentence in pairs]
-        print("working")
+
         originator_data = pad_sequences(self.texts_to_sequences(originator_sentences), maxlen=RelationPredictor.MAX_SEQUENCE_LENGTH)
         responder_data = pad_sequences(self.texts_to_sequences(responder_sentences), maxlen=RelationPredictor.MAX_SEQUENCE_LENGTH)
         
