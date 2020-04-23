@@ -44,4 +44,4 @@ A.layout('sfdp')
 filename_png = f"./graphs/rendered/{submission_id}/sfdp.png"
 A.draw(filename_png)
 
-print("Graph successfully rendered to ./graphs/rendered/{submission_id}/")
+print(f"Graph successfully rendered to ./graphs/rendered/{submission_id}/")

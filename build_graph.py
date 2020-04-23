@@ -171,4 +171,4 @@ nx.write_gexf(G, f"./graphs/data/{submission_id}/{submission_id}.gexf")
 
 print(f"Graph built in {(time() - start)/60} minutes")
 
-print("Graph successfully built to ./graphs/data/{submission_id}/")
+print(f"Graph successfully built to ./graphs/data/{submission_id}/")
